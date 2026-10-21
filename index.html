@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-ink 交通天氣資訊屏</title>
+    <title>E-ink 交通天氣資訊屏-0</title>
     <!-- 引入 Tailwind CSS 用於快速排版 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Phosphor Icons 用於簡潔圖標 -->
@@ -168,13 +168,13 @@
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // 調整間距避免擠壓出界，將 gap-y-3 縮小為 gap-y-1，並稍微縮小兩側 px
-            let html = `<div class="grid grid-cols-7 gap-y-1 gap-x-1 text-center w-full px-4">`;
+            // 調整為極小間距，適配小螢幕
+            let html = `<div class="grid grid-cols-7 gap-y-0.5 gap-x-0.5 text-center w-full px-2">`;
             
             const days = ['日', '一', '二', '三', '四', '五', '六'];
             days.forEach(d => {
                 const isWeekend = d === '日' || d === '六';
-                html += `<div class="font-bold text-xl mb-2 ${isWeekend ? 'text-gray-300' : 'text-gray-600'}">${d}</div>`;
+                html += `<div class="font-bold text-sm mb-1 ${isWeekend ? 'text-gray-300' : 'text-gray-600'}">${d}</div>`;
             });
 
             for (let i = 0; i < firstDay; i++) {
@@ -188,21 +188,23 @@
                 const isHoliday = hkHolidays.includes(dateStr);
                 const isToday = i === today;
 
-                // 稍微縮小字體與圓圈尺寸，確保 5-6 行月曆都能完全顯示在框內
-                let textClass = "text-3xl font-bold ";
-                let circleClass = "flex items-center justify-center h-14 w-14 mx-auto ";
+                // 縮小字體與圓圈尺寸
+                let textClass = "text-xl font-bold leading-none ";
+                let circleClass = "flex items-center justify-center h-9 w-9 mx-auto rounded-full border-[3px] ";
 
-                // 判斷樣式: 今天(粗黑框)、週末/假期(淺色)、平日(黑色)
                 if (isToday) {
-                    circleClass += "border-[4px] border-black rounded-full text-black ";
-                } else if (isWeekend || isHoliday) {
-                    textClass += "text-gray-300 ";
+                    circleClass += "border-black text-black ";
                 } else {
-                    textClass += "text-black ";
+                    circleClass += "border-transparent ";
+                    if (isWeekend || isHoliday) {
+                        textClass += "text-gray-300 ";
+                    } else {
+                        textClass += "text-black ";
+                    }
                 }
 
-                // 假期標記點 (非假日時使用 opacity-0 保留高度，避免排版跳動)
-                const marker = isHoliday && !isToday ? `<div class="w-2 h-2 bg-gray-300 rounded-full mt-1"></div>` : `<div class="w-2 h-2 mt-1 opacity-0"></div>`;
+                // 縮小標記點
+                const marker = isHoliday && !isToday ? `<div class="w-1.5 h-1.5 bg-gray-300 rounded-full mt-0.5"></div>` : `<div class="w-1.5 h-1.5 mt-0.5 opacity-0"></div>`;
 
                 html += `<div class="flex flex-col items-center justify-start"><div class="${circleClass} ${textClass}">${i}</div>${marker}</div>`;
             }
@@ -211,6 +213,7 @@
         }
 
         // 3. 格式化時間與日期
+    // 3. 格式化時間與日期
         function formatTime(date) {
             return date.getHours().toString().padStart(2, '0') + ':' + 
                    date.getMinutes().toString().padStart(2, '0');
