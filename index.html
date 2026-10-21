@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-ink 交通天氣資訊屏-</title>
+    <title>E-ink 交通天氣資訊屏</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -142,8 +142,7 @@
                 console.error("假期讀取失敗:", error);
             }
         }
-
-        // 2. 渲染月曆 (已放大字體與行距)
+        // 2. 渲染月曆 (微調字體與間距防裁切)
         function renderCalendar() {
             const now = new Date();
             const year = now.getFullYear();
@@ -151,18 +150,19 @@
             const today = now.getDate();
             const todayStr = `${year}${String(month + 1).padStart(2, '0')}${String(today).padStart(2, '0')}`;
 
-            document.getElementById('calendar-month-title').innerText = `${year}年 ${month + 1}月`;
+            document.getElementById('calendar-month-title').innerText = `${String(month + 1).padStart(2, '0')}-${year}`;
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // 調整間距使其完美填滿剩餘高度
-            let html = `<div class="grid grid-cols-7 gap-y-3 gap-x-1 text-center w-full px-2">`;
+            // 縮減行距 (gap-y-1)
+            let html = `<div class="grid grid-cols-7 gap-y-1 text-center w-full px-1">`;
             
             const days = ['日', '一', '二', '三', '四', '五', '六'];
             days.forEach(d => {
                 const isWeekend = d === '日' || d === '六';
-                html += `<div class="font-bold text-xl mb-2 ${isWeekend ? 'text-gray-300' : 'text-gray-600'}">${d}</div>`;
+                // 縮小星期標題字體 (text-lg)
+                html += `<div class="font-bold text-lg mb-1 ${isWeekend ? 'text-gray-300' : 'text-gray-600'}">${d}</div>`;
             });
 
             for (let i = 0; i < firstDay; i++) {
@@ -176,9 +176,9 @@
                 const isHoliday = hkHolidays.includes(dateStr);
                 const isToday = i === today;
 
-                // 加大字體與圓圈
-                let textClass = "text-3xl font-bold leading-none ";
-                let circleClass = "flex items-center justify-center h-12 w-12 mx-auto rounded-full border-[4px] ";
+                // 縮小字體 (text-2xl) 與 縮小圓圈 (h-10 w-10 border-[3px])
+                let textClass = "text-2xl font-bold leading-none ";
+                let circleClass = "flex items-center justify-center h-10 w-10 mx-auto rounded-full border-[3px] ";
 
                 if (isToday) {
                     circleClass += "border-black text-black ";
@@ -207,8 +207,8 @@
 
         function updateTime() {
             const now = new Date();
-            const days = ['日', '一', '二', '三', '四', '五', '六'];
-            const dateStr = `${now.getMonth() + 1}月${now.getDate()}日 (星期${days[now.getDay()]})`;
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const dateStr = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()} (${days[now.getDay()]})`;
             
             document.getElementById('date-display').innerText = dateStr;
             document.getElementById('time-display').innerText = formatTime(now);
@@ -259,13 +259,16 @@
 
                     function formatMtrTime(train) {
                         if (!train || train.ttnt === undefined) return { value: "--", unit: "" };
-                        if (train.ttnt === "0" || train.ttnt === "") return { value: "即將", unit: "" }; // 簡化為即將
-                        return { value: train.ttnt, unit: "分" };
+                        if (train.ttnt === "0" || train.ttnt === "") return { value: "Now", unit: "" };
+                        return { value: train.ttnt, unit: "m" }; // 將 分 改為 m
                     }
 
                     if (upTrains && upTrains.length > 0) {
                         const up1 = formatMtrTime(upTrains[0]);
-                        document.getElementById('mtr-up-1').innerText = up1.value;
+                        const elUp1 = document.getElementById('mtr-up-1');
+                        elUp1.innerText = up1.value;
+                        // 動態切換：如果是「Now」，就縮小並變灰
+                        elUp1.className = up1.value === "Now" ? "text-3xl font-bold text-gray-500" : "text-5xl font-black";
                         document.getElementById('mtr-up-1-unit').innerText = up1.unit;
                         
                         const up2 = upTrains.length > 1 ? formatMtrTime(upTrains[1]) : { value: "--", unit: "" };
@@ -274,7 +277,9 @@
 
                     if (downTrains && downTrains.length > 0) {
                         const down1 = formatMtrTime(downTrains[0]);
-                        document.getElementById('mtr-down-1').innerText = down1.value;
+                        const elDown1 = document.getElementById('mtr-down-1');
+                        elDown1.innerText = down1.value;
+                        elDown1.className = down1.value === "Now" ? "text-3xl font-bold text-gray-500" : "text-5xl font-black";
                         document.getElementById('mtr-down-1-unit').innerText = down1.unit;
                         
                         const down2 = downTrains.length > 1 ? formatMtrTime(downTrains[1]) : { value: "--", unit: "" };
@@ -313,7 +318,7 @@
                     const targetTime = new Date(timeString.replace(' ', 'T'));
                     const now = new Date();
                     const diffMins = Math.floor((targetTime - now) / 60000);
-                    return diffMins <= 0 ? { value: "即將", unit: "" } : { value: diffMins.toString(), unit: "分" };
+                    return diffMins <= 0 ? { value: "Now", unit: "" } : { value: diffMins.toString(), unit: "m" }; // 將 分 改為 m
                 }
 
                 if (a22StopId) {
@@ -325,7 +330,10 @@
                         
                         if (validEtas.length > 0) {
                             const eta1 = getEtaData(validEtas[0].eta);
-                            document.getElementById('bus-eta-1').innerText = eta1.value;
+                            const elEta1 = document.getElementById('bus-eta-1');
+                            elEta1.innerText = eta1.value;
+                            // 動態切換：如果是「Now」，就縮小並變灰
+                            elEta1.className = eta1.value === "Now" ? "text-3xl font-bold text-gray-500" : "text-5xl font-black";
                             document.getElementById('bus-eta-1-unit').innerText = eta1.unit;
                             
                             if (validEtas.length > 1) {
@@ -351,7 +359,8 @@
         async function init() {
             await fetchHolidays();
             updateTime();
-            setInterval(updateTime, 30000);
+            // 改為每 1 秒校對一次本地時間，確保分鐘跳動零延遲
+            setInterval(updateTime, 1000);
 
             await fetchWeather();
             await fetchETAs();
