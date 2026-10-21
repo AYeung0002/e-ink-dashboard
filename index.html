@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-ink 交通天氣資訊屏-0</title>
+    <title>E-ink 交通天氣資訊屏</title>
     <!-- 引入 Tailwind CSS 用於快速排版 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Phosphor Icons 用於簡潔圖標 -->
@@ -45,92 +45,99 @@
 <body class="h-screen w-screen p-2 box-border flex gap-2">
 
     <!-- 左側：時間與月曆 (佔比 55%) -->
-    <aside class="w-[55%] flex flex-col eink-border h-full">
+    <aside class="w-[55%] flex flex-col eink-border h-full min-h-0">
         <!-- 時間區塊 -->
-        <div class="h-[40%] flex flex-col justify-center items-center eink-border-b p-4">
-            <div id="date-display" class="text-3xl font-bold mb-2 text-gray-600">載入中...</div>
-            <div id="time-display" class="text-[10rem] leading-none font-black tracking-tighter">--:--</div>
+        <div class="flex-none flex flex-col justify-center items-center eink-border-b p-2">
+            <div id="date-display" class="text-2xl font-bold mb-1 text-gray-600">載入中...</div>
+            <div id="time-display" class="text-[8rem] leading-none font-black tracking-tighter">--:--</div>
         </div>
         <!-- 月曆區塊 -->
-        <div class="h-[60%] flex flex-col pt-6 pb-2 justify-center">
-            <div class="flex items-center gap-2 mb-4 px-8 text-2xl font-bold text-gray-800">
-                <i class="ph-bold ph-calendar-blank text-3xl"></i>
+        <div class="flex-1 flex flex-col pt-3 pb-1 justify-center min-h-0">
+            <div class="flex items-center gap-2 mb-2 px-4 text-xl font-bold text-gray-800 flex-none">
+                <i class="ph-bold ph-calendar-blank text-2xl"></i>
                 <span id="calendar-month-title">--月</span>
             </div>
-            <div id="calendar-container" class="flex-1"></div>
+            <div id="calendar-container" class="flex-1 min-h-0"></div>
         </div>
     </aside>
 
     <!-- 右側：天氣與交通 (佔比 45%) -->
-    <main class="w-[45%] flex flex-col gap-2 h-full">
+    <main class="w-[45%] flex flex-col gap-2 h-full min-h-0">
         <!-- 天氣區塊 -->
-        <section class="h-[40%] eink-border flex flex-col justify-center items-center p-4 relative">
-            <div class="absolute top-4 left-4 flex items-center gap-1 text-xl font-bold text-gray-500">
-                <i class="ph-fill ph-map-pin"></i> <span>京士柏</span>
-            </div>
-            <div class="absolute top-4 right-4 flex items-center gap-1 text-lg font-bold text-gray-400">
-                <i class="ph-bold ph-clock-clockwise"></i> <span id="last-update">--:--</span>
-            </div>
-            
-            <div class="flex items-center justify-center gap-4 mt-8 w-full">
-                <i class="ph-fill ph-thermometer text-[6rem] text-black"></i>
-                <div id="temp-display" class="text-[7rem] leading-none font-black tracking-tighter">--°</div>
+        <!-- 移除 absolute 定位，改用 flex 正常排版，避免擠壓重疊 -->
+        <section class="flex-[3.5] eink-border flex flex-col justify-between p-3 min-h-0">
+            <!-- 頂部資訊列 (地點與刷新時間) -->
+            <div class="flex items-center justify-between text-sm font-bold text-gray-500 flex-none">
+                <div class="flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> <span>京士柏</span></div>
+                <div class="flex items-center gap-1"><i class="ph-bold ph-clock-clockwise"></i> <span id="last-update">--:--</span></div>
             </div>
             
-            <div class="flex items-center justify-center gap-10 mt-6 text-4xl font-bold w-full">
-                <div class="flex items-center gap-2">
+            <!-- 溫度 -->
+            <div class="flex items-center justify-center gap-2 flex-1 min-h-0 my-1">
+                <i class="ph-fill ph-thermometer text-[4.5rem] text-black"></i>
+                <div id="temp-display" class="text-[5.5rem] leading-none font-black tracking-tighter">--°</div>
+            </div>
+            
+            <!-- 濕度與降雨 -->
+            <div class="flex items-center justify-center gap-6 text-xl font-bold w-full flex-none pb-1">
+                <div class="flex items-center gap-1">
                     <i class="ph-fill ph-drop text-gray-600"></i>
                     <span id="humidity-display">--%</span>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1">
                     <i class="ph-fill ph-umbrella text-gray-600"></i>
                     <span id="pop-display">--</span>
                 </div>
             </div>
-            <div id="weather-warning" class="text-2xl font-bold mt-4 h-6 tracking-wide text-gray-800"></div>
         </section>
 
         <!-- 交通區塊 -->
-        <section class="h-[60%] flex flex-col gap-2">
+        <section class="flex-[6.5] flex flex-col gap-2 min-h-0">
             <!-- 港鐵 -->
-            <div class="flex-1 eink-border flex flex-col p-5 justify-center">
-                <div class="flex items-center gap-2 text-2xl font-bold mb-5 border-b-2 border-gray-200 pb-2">
-                    <i class="ph-fill ph-train text-3xl text-gray-800"></i> 
+            <div class="flex-1 eink-border flex flex-col p-3 justify-center min-h-0">
+                <div class="flex items-center gap-2 text-lg font-bold mb-2 border-b-2 border-gray-200 pb-1 flex-none">
+                    <i class="ph-fill ph-train text-xl text-gray-800"></i> 
                     <span>柯士甸站 (屯馬線)</span>
                 </div>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1 flex-1 justify-around">
                     <div class="flex items-center justify-between">
-                        <span class="text-2xl font-bold text-gray-600 w-28">往烏溪沙</span>
-                        <div class="flex items-baseline gap-3 flex-1 justify-end">
-                            <span id="mtr-up-1" class="text-5xl font-black">--</span>
-                            <span class="text-xl text-gray-500 font-bold w-10" id="mtr-up-1-unit"></span>
-                            <span id="mtr-up-2" class="text-3xl font-bold text-gray-400 w-20 text-right">--</span>
+                        <span class="text-base font-bold text-gray-600 w-20">往烏溪沙</span>
+                        <div class="flex items-baseline gap-2 flex-1 justify-end">
+                            <span id="mtr-up-1" class="text-3xl font-black">--</span>
+                            <span class="text-sm text-gray-500 font-bold w-4" id="mtr-up-1-unit"></span>
+                            <span id="mtr-up-2" class="text-xl font-bold text-gray-400 w-12 text-right">--</span>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-2xl font-bold text-gray-600 w-28">往屯門</span>
-                        <div class="flex items-baseline gap-3 flex-1 justify-end">
-                            <span id="mtr-down-1" class="text-5xl font-black">--</span>
-                            <span class="text-xl text-gray-500 font-bold w-10" id="mtr-down-1-unit"></span>
-                            <span id="mtr-down-2" class="text-3xl font-bold text-gray-400 w-20 text-right">--</span>
+                        <span class="text-base font-bold text-gray-600 w-20">往屯門</span>
+                        <div class="flex items-baseline gap-2 flex-1 justify-end">
+                            <span id="mtr-down-1" class="text-3xl font-black">--</span>
+                            <span class="text-sm text-gray-500 font-bold w-4" id="mtr-down-1-unit"></span>
+                            <span id="mtr-down-2" class="text-xl font-bold text-gray-400 w-12 text-right">--</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 巴士 -->
-            <div class="flex-1 eink-border flex flex-col p-5 justify-center">
-                <div class="flex items-center gap-2 text-2xl font-bold mb-5 border-b-2 border-gray-200 pb-2">
-                    <i class="ph-fill ph-bus text-3xl text-gray-800"></i> 
+            <div class="flex-1 eink-border flex flex-col p-3 justify-center min-h-0">
+                <div class="flex items-center gap-2 text-lg font-bold mb-2 border-b-2 border-gray-200 pb-1 flex-none">
+                    <i class="ph-fill ph-bus text-xl text-gray-800"></i> 
                     <span>A22 (往藍田)</span>
-                    <span id="bus-stop-name" class="text-base text-gray-400 ml-auto font-normal">尋找中...</span>
+                    <span id="bus-stop-name" class="text-xs text-gray-400 ml-auto font-normal truncate max-w-[80px]">尋找中</span>
                 </div>
-                <div class="flex items-center justify-between mt-2">
-                    <span class="text-2xl font-bold text-gray-600 w-28">抵站時間</span>
-                    <div class="flex items-baseline gap-3 flex-1 justify-end">
-                        <span id="bus-eta-1" class="text-6xl font-black">--</span>
-                        <span class="text-xl text-gray-500 font-bold w-10" id="bus-eta-1-unit"></span>
-                        <span id="bus-eta-2" class="text-4xl font-bold text-gray-400 w-20 text-right">--</span>
+                <div class="flex items-center justify-between flex-1">
+                    <div class="flex flex-col items-center flex-1">
+                        <div class="flex items-baseline gap-1">
+                            <span id="bus-eta-1" class="text-4xl font-black">--</span>
+                            <span class="text-sm text-gray-500 font-bold" id="bus-eta-1-unit"></span>
+                        </div>
+                    </div>
+                    <div class="h-full w-px bg-gray-200 mx-2"></div>
+                    <div class="flex flex-col items-center flex-1">
+                        <div class="flex items-baseline gap-1">
+                            <span id="bus-eta-2" class="text-2xl font-bold text-gray-400">--</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -248,10 +255,13 @@
                     document.getElementById('humidity-display').innerText = `${data.humidity.data[0].value}%`;
                 }
 
-                if (data.warningMessage && data.warningMessage.length > 0) {
-                    document.getElementById('weather-warning').innerText = `⚠️ ${data.warningMessage[0]}`;
-                } else {
-                    document.getElementById('weather-warning').innerText = "";
+                const warningEl = document.getElementById('weather-warning');
+                if (warningEl) {
+                    if (data.warningMessage && data.warningMessage.length > 0) {
+                        warningEl.innerText = `⚠️ ${data.warningMessage[0]}`;
+                    } else {
+                        warningEl.innerText = "";
+                    }
                 }
 
                 const fndRes = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc');
