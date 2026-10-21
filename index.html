@@ -233,8 +233,8 @@
                 let targetTemp = data.temperature.data.find(d => d.place === "香港天文台");
 
                 if (targetTemp) {
-                    // 保留小數點後一位
-                    document.getElementById('temp-display').innerText = `${parseFloat(targetTemp.value).toFixed(1)}°`;
+                    // 移除 .toFixed(1)，直接顯示 API 提供的整數
+                    document.getElementById('temp-display').innerText = `${targetTemp.value}°`;
                     document.getElementById('weather-location').innerText = targetTemp.place;
                 }
 
